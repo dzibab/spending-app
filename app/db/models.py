@@ -1,13 +1,14 @@
-from sqlalchemy import Column, Float, String, DateTime, Integer
+from sqlalchemy import Column, Integer, Float, String, DateTime
 
-from .session import Base
+from app.db.session import Base
 
 
 class Spending(Base):
     __tablename__ = "spendings"
-    id = Column(Integer, primary_key=True, index=True)
+
+    id = Column(Integer, primary_key=True, index=True)  # Ensure there's an id column
     description = Column(String, index=True)
-    amount = Column(Float, nullable=False)          # Amount as Float for monetary values
-    date = Column(DateTime, nullable=False)         # Changed to DateTime for full timestamp
-    currency = Column(String, nullable=False)        # Currency code (e.g., USD, EUR)
-    category = Column(String, nullable=False)        # Category of spending (e.g., Food, Travel)
+    amount = Column(Float, nullable=False)
+    date = Column(DateTime, nullable=False)
+    currency = Column(String, nullable=False)
+    category = Column(String, nullable=False)

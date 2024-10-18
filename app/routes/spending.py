@@ -2,16 +2,21 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models.spending import SpendingCreate, SpendingUpdate
-from app.db.models import Spending
+from app.models.spending import SpendingCreate, SpendingUpdate, Spending as SpendingResponse  # Import Pydantic models
+from app.db.models import Spending as SpendingDB  # Your SQLAlchemy model
 
 
 router = APIRouter()
 
 
-@router.post("/spendings/")
+@router.post(
+    "/spendings/",
+    response_model=SpendingResponse,
+    summary="Add a new spending",
+    description="Creates a new spending record with the provided details.",
+)
 def add_spending(spending: SpendingCreate, db: Session = Depends(get_db)):
-    new_spending = Spending(
+    new_spending = SpendingDB(
         description=spending.description,
         amount=spending.amount,
         date=spending.date,
@@ -25,18 +30,28 @@ def add_spending(spending: SpendingCreate, db: Session = Depends(get_db)):
 
 
 # GET route to fetch a spending by ID
-@router.get("/spendings/{spending_id}")
+@router.get(
+    "/spendings/{spending_id}",
+    response_model=SpendingResponse,
+    summary="Get a spending",
+    description="Retrieves a spending record by its ID.",
+)
 def get_spending(spending_id: int, db: Session = Depends(get_db)):
-    spending = db.query(Spending).filter(Spending.id == spending_id).first()
+    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
     if not spending:
         raise HTTPException(status_code=404, detail="Spending not found")
     return spending
 
 
 # Update Spending
-@router.put("/spendings/{spending_id}")
+@router.put(
+    "/spendings/{spending_id}",
+    response_model=SpendingResponse,
+    summary="Update a spending",
+    description="Updates a spending record by its ID.",
+)
 def update_spending(spending_id: int, updated_data: SpendingUpdate, db: Session = Depends(get_db)):
-    spending = db.query(Spending).filter(Spending.id == spending_id).first()
+    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
 
     if not spending:
         raise HTTPException(status_code=404, detail="Spending not found")
@@ -59,9 +74,13 @@ def update_spending(spending_id: int, updated_data: SpendingUpdate, db: Session 
 
 
 # Delete Spending
-@router.delete("/spendings/{spending_id}")
+@router.delete(
+    "/spendings/{spending_id}",
+    summary="Delete a spending",
+    description="Deletes a spending record by its ID.",
+)
 def delete_spending(spending_id: int, db: Session = Depends(get_db)):
-    spending = db.query(Spending).filter(Spending.id == spending_id).first()
+    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
     if not spending:
         raise HTTPException(status_code=404, detail="Spending not found")
 
