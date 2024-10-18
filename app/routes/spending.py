@@ -1,14 +1,23 @@
 from typing import Optional
 from datetime import date, datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
-from app.models.spending import SpendingCreate, SpendingUpdate, Spending as SpendingResponse  # Import Pydantic models
-from app.db.models import Spending as SpendingDB  # Your SQLAlchemy model
+from app.models.spending import SpendingCreate, SpendingUpdate, Spending as SpendingResponse
+from app.db.models import Spending as SpendingDB
 
 
 router = APIRouter()
+
+
+# Helper function to fetch spending by ID
+def fetch_spending(spending_id: int, db: Session) -> SpendingDB:
+    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
+    if not spending:
+        raise HTTPException(status_code=404, detail="Spending not found")
+    return spending
 
 
 @router.post(
@@ -18,20 +27,13 @@ router = APIRouter()
     description="Creates a new spending record with the provided details.",
 )
 def add_spending(spending: SpendingCreate, db: Session = Depends(get_db)):
-    new_spending = SpendingDB(
-        description=spending.description,
-        amount=spending.amount,
-        date=spending.date,
-        currency=spending.currency,
-        category=spending.category
-    )
+    new_spending = SpendingDB(**spending.model_dump())
     db.add(new_spending)
     db.commit()
     db.refresh(new_spending)
     return new_spending
 
 
-# GET route to fetch a spending by ID
 @router.get(
     "/spendings/{spending_id}",
     response_model=SpendingResponse,
@@ -39,10 +41,7 @@ def add_spending(spending: SpendingCreate, db: Session = Depends(get_db)):
     description="Retrieves a spending record by its ID.",
 )
 def get_spending(spending_id: int, db: Session = Depends(get_db)):
-    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
-    if not spending:
-        raise HTTPException(status_code=404, detail="Spending not found")
-    return spending
+    return fetch_spending(spending_id, db)
 
 
 @router.get(
@@ -69,11 +68,10 @@ def get_spendings(
         query = query.filter(SpendingDB.description.ilike(f"%{description}%"))
     if start_date:
         start_datetime = datetime.combine(start_date, datetime.min.time())
-        query = query.filter(SpendingDB.date >= start_datetime)  # Start date filter
+        query = query.filter(SpendingDB.date >= start_datetime)
     if end_date:
         end_datetime = datetime.combine(end_date, datetime.max.time())
-        query = query.filter(SpendingDB.date <= end_datetime)  # End date filter
-
+        query = query.filter(SpendingDB.date <= end_datetime)
     if currency:
         query = query.filter(SpendingDB.currency == currency)
     if category:
@@ -81,16 +79,15 @@ def get_spendings(
     if amount:
         query = query.filter(SpendingDB.amount == amount)
 
-    total = query.count()  # Get total count of records after filtering
+    total = query.count()
     spendings = query.offset(skip).limit(limit).all()
 
-    # Convert spendings to SpendingResponse model using model_validate
+    # Convert spendings to SpendingResponse model
     spendings_response = [SpendingResponse.model_validate(spending) for spending in spendings]
 
     return {"spendings": spendings_response, "total": total}
 
 
-# Update Spending
 @router.put(
     "/spendings/{spending_id}",
     response_model=SpendingResponse,
@@ -98,40 +95,24 @@ def get_spendings(
     description="Updates a spending record by its ID.",
 )
 def update_spending(spending_id: int, updated_data: SpendingUpdate, db: Session = Depends(get_db)):
-    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
-
-    if not spending:
-        raise HTTPException(status_code=404, detail="Spending not found")
+    spending = fetch_spending(spending_id, db)
 
     # Update fields if new values are provided
-    if updated_data.description is not None:
-        spending.description = updated_data.description
-    if updated_data.amount is not None:
-        spending.amount = updated_data.amount
-    if updated_data.date is not None:
-        spending.date = updated_data.date
-    if updated_data.currency is not None:
-        spending.currency = updated_data.currency
-    if updated_data.category is not None:
-        spending.category = updated_data.category
+    for field, value in updated_data.model_dump(exclude_unset=True).items():
+        setattr(spending, field, value)
 
     db.commit()
     db.refresh(spending)
     return spending
 
 
-# Delete Spending
 @router.delete(
     "/spendings/{spending_id}",
     summary="Delete a spending",
     description="Deletes a spending record by its ID.",
 )
 def delete_spending(spending_id: int, db: Session = Depends(get_db)):
-    spending = db.query(SpendingDB).filter(SpendingDB.id == spending_id).first()
-    if not spending:
-        raise HTTPException(status_code=404, detail="Spending not found")
-
+    spending = fetch_spending(spending_id, db)
     db.delete(spending)
     db.commit()
-
     return {"detail": "Spending deleted successfully"}
