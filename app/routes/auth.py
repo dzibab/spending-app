@@ -33,8 +33,8 @@ def register(user: User, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(user: User, db: Session = Depends(get_db)):
+async def login(user: User, db: Session = Depends(get_db)):
     db_user = db.query(UserDB).filter(UserDB.username == user.username).first()
-    if not db_user or not verify_password(user.password, db_user.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid credentials")
+    if not db_user or not verify_password(db_user.hashed_password, user.password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     return {"message": "Login successful!"}
