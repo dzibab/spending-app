@@ -1,4 +1,6 @@
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import HTMLResponse
 
 from .db.session import Base, engine
 from .routes import spending
@@ -15,6 +17,12 @@ Base.metadata.create_all(bind=engine)
 app.include_router(spending.router)
 
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to Spending Tracker!"}
+# Mount the static files (CSS, JS, etc.)
+app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
+
+
+# Serve the index.html for the root path
+@app.get("/", response_class=HTMLResponse)
+def read_index():
+    with open("frontend/index.html") as f:
+        return f.read()
