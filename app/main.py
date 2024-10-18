@@ -27,3 +27,9 @@ app.mount("/static", StaticFiles(directory="frontend/static"), name="static")
 def read_index():
     with open("frontend/index.html") as f:
         return f.read()
+
+
+@app.get("/auth", response_class=HTMLResponse)
+async def read_auth_page():
+    with open("frontend/auth.html") as f:
+        return f.read()
