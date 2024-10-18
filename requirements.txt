@@ -8,3 +8,4 @@ passlib
 python-jose
 pydantic
 aiofiles
+jinja2

@@ -10,7 +10,7 @@ client = TestClient(app)
 def test_read_root():
     response = client.get("/")
     assert response.status_code == 200
-    assert "Hello from Frontend!" in response.text  # Check for the HTML content
+    assert "<h1>Welcome to the Spending Tracker!</h1>" in response.text  # Check for the correct HTML content
 
 
 def test_get_spending(client, session):

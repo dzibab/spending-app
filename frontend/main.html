@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Spending App</title>
+    <link rel="stylesheet" href="/static/styles.css"> <!-- Link to your CSS -->
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/add-spending">Add Spending</a></li>
+            <li><a href="/auth">Login</a></li>
+            <li><a href="/spendings">View Spendings</a></li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <!-- The content of each page will be injected here -->
+        {{ content | safe }}
+    </div>
+</body>
+</html>
