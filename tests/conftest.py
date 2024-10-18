@@ -4,8 +4,10 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
 from app.db.session import Base, get_db
-from app.db.models import Spending as SpendingDB
+from app.db.models import Spending as SpendingDB, UserDB
 from app.main import app
+from app.utils.security import hash_password  # Adjust the import based on your project structure
+
 
 # Create a new SQLite test database
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
@@ -65,3 +67,13 @@ def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.fixture
+def create_user(session):
+    """Fixture to create a user in the database for testing."""
+    password = "password123"  # Use a plain password for the fixture
+    user = UserDB(username="testuser", hashed_password=hash_password(password))
+    session.add(user)
+    session.commit()
+    return user

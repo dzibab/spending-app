@@ -3,7 +3,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 
 from .db.session import Base, engine
-from .routes import spending
+from .routes import spending, auth
 
 
 app = FastAPI()
@@ -15,6 +15,7 @@ Base.metadata.create_all(bind=engine)
 
 # Include routers
 app.include_router(spending.router)
+app.include_router(auth.router)
 
 
 # Mount the static files (CSS, JS, etc.)
