@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field
 
 
 class SpendingBase(BaseModel):
-    description: str = Field(..., description="A brief description of the spending.")
+    description: Optional[str] = Field(None, description="A brief description of the spending.")
     amount: float = Field(..., description="The amount spent.")
     date: datetime = Field(..., description="The date and time when the spending occurred.")
     currency: str = Field(..., description="The currency in which the spending was made (e.g., USD, EUR).")
