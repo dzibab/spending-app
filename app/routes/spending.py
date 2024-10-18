@@ -55,11 +55,11 @@ def get_spendings(skip: int = Query(0, ge=0), limit: int = Query(10, gt=0), db: 
 
     # Convert spendings to SpendingResponse model using model_validate
     spendings_response = [SpendingResponse.model_validate(spending) for spending in spendings]
- 
+
     return {"spendings": spendings_response, "total": total}  # Return as a dictionary
 
 
- # Update Spending
+# Update Spending
 @router.put(
     "/spendings/{spending_id}",
     response_model=SpendingResponse,
