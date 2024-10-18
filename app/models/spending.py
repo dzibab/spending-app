@@ -11,8 +11,9 @@ class SpendingBase(BaseModel):
     currency: str = Field(..., description="The currency in which the spending was made (e.g., USD, EUR).")
     category: str = Field(..., description="The category of the spending (e.g., Food, Entertainment).")
 
-    class ConfigDict:
-        from_attributes = True  # Enable ORM mode
+    model_config = {
+        "from_attributes": True,
+    }
 
 
 class SpendingCreate(SpendingBase):

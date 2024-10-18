@@ -4,6 +4,7 @@ from sqlalchemy.orm import sessionmaker
 from fastapi.testclient import TestClient
 
 from app.db.session import Base, get_db
+from app.db.models import Spending as SpendingDB
 from app.main import app
 
 # Create a new SQLite test database
@@ -23,6 +24,13 @@ def session():
         yield db
     finally:
         db.close()
+
+
+@pytest.fixture(scope="function", autouse=True)
+def clear_spendings(session):
+    # Clear the spending table before each test
+    session.query(SpendingDB).delete()
+    session.commit()  # Commit the changes to the database
 
 
 # Override the get_db dependency in FastAPI and provide the client

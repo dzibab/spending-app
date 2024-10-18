@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.db.session import get_db
@@ -43,7 +43,23 @@ def get_spending(spending_id: int, db: Session = Depends(get_db)):
     return spending
 
 
-# Update Spending
+@router.get(
+    "/spendings/",
+    response_model=dict,
+    summary="Get spendings",
+    description="Retrieves a list of spending records with optional pagination.",
+)
+def get_spendings(skip: int = Query(0, ge=0), limit: int = Query(10, gt=0), db: Session = Depends(get_db)):
+    total = db.query(SpendingDB).count()  # Get total count of records
+    spendings = db.query(SpendingDB).offset(skip).limit(limit).all()
+
+    # Convert spendings to SpendingResponse model using model_validate
+    spendings_response = [SpendingResponse.model_validate(spending) for spending in spendings]
+ 
+    return {"spendings": spendings_response, "total": total}  # Return as a dictionary
+
+
+ # Update Spending
 @router.put(
     "/spendings/{spending_id}",
     response_model=SpendingResponse,

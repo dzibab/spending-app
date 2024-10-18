@@ -110,3 +110,34 @@ def test_delete_spending(client, session):
     # Verify that the spending no longer exists
     get_response = client.get(f"/spendings/{spending_id}")
     assert get_response.status_code == 404  # Expect 404 since it should be deleted
+
+
+def test_get_spendings(client, session):
+    # Add some test spendings
+    for i in range(20):  # Add 20 records
+        spending_data = {
+            "description": f"Test Spending {i}",
+            "amount": 10.0,
+            "date": datetime(2024, 10, 17, 14, 0, 0).isoformat(),
+            "currency": "USD",
+            "category": "Food"
+        }
+        client.post("/spendings/", json=spending_data)
+
+    # Request the first 10 spendings
+    response = client.get("/spendings/?skip=0&limit=10")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 10  # Expecting 10 records
+    assert response.json()["total"] == 20  # Total should be 20
+
+    # Request the next 10 spendings
+    response = client.get("/spendings/?skip=10&limit=10")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 10  # Expecting 10 records
+    assert response.json()["total"] == 20  # Total should still be 20
+
+    # Requesting beyond the total count
+    response = client.get("/spendings/?skip=30&limit=10")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 0  # Expecting 0 records
+    assert response.json()["total"] == 20  # Total should still be 20
