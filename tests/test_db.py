@@ -3,7 +3,7 @@ from datetime import datetime
 from app.db.models import Spending
 
 
-def test_create_spending(test_db):
+def test_create_spending(session):
     # Use a datetime object for the date field
     new_spending = Spending(
         amount=19.99,
@@ -12,12 +12,12 @@ def test_create_spending(test_db):
         category="Food"
     )
 
-    test_db.add(new_spending)
-    test_db.commit()
-    test_db.refresh(new_spending)
+    session.add(new_spending)  # Use the session fixture
+    session.commit()
+    session.refresh(new_spending)
 
     # Query to ensure the spending was added
-    spending = test_db.query(Spending).filter(Spending.id == new_spending.id).first()
+    spending = session.query(Spending).filter(Spending.id == new_spending.id).first()
 
     assert spending is not None
     assert spending.amount == 19.99
