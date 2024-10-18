@@ -33,3 +33,9 @@ def read_index():
 async def read_auth_page():
     with open("frontend/auth.html") as f:
         return f.read()
+
+
+@app.get("/add-spending", response_class=HTMLResponse)
+async def read_add_spending_page():
+    with open("frontend/add_spending.html") as f:
+        return f.read()
