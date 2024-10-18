@@ -141,3 +141,79 @@ def test_get_spendings(client, session):
     assert response.status_code == 200
     assert len(response.json()["spendings"]) == 0  # Expecting 0 records
     assert response.json()["total"] == 20  # Total should still be 20
+
+
+def test_get_spendings_with_date_range(client, session):
+    # Add some test spendings
+    for i in range(20):
+        spending_data = {
+            "description": f"Test Spending {i}",
+            "amount": 10.0 + i,
+            "date": datetime(2024, 10, 17, 14, 0, 0).isoformat(),  # Same date for simplicity
+            "currency": "USD",
+            "category": "Food"
+        }
+        client.post("/spendings/", json=spending_data)
+
+    # Test filtering by date range
+    response = client.get("/spendings/?start_date=2024-10-17&end_date=2024-10-17&limit=20")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 20  # Expecting 20 records
+
+    # Test filtering with a different date range
+    response = client.get("/spendings/?start_date=2024-10-16&end_date=2024-10-18&limit=20")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 20  # Expecting 20 records (as they all fall in this range)
+
+
+def test_get_spendings_with_all_filters(client, session):
+    # Add test spendings
+    spendings_data = [
+        {"description": "Groceries", "amount": 50.0, "date": "2024-10-17", "currency": "USD", "category": "Food"},
+        {"description": "Dinner", "amount": 30.0, "date": "2024-10-17", "currency": "USD", "category": "Food"},
+        {"description": "Cinema", "amount": 15.0, "date": "2024-10-18", "currency": "USD", "category": "Entertainment"},
+        {"description": "Gas", "amount": 40.0, "date": "2024-10-19", "currency": "USD", "category": "Transport"},
+        {"description": "Book", "amount": 20.0, "date": "2024-10-20", "currency": "USD", "category": "Education"},
+        {"description": "Grocery", "amount": 25.0, "date": "2024-10-20", "currency": "USD", "category": "Food"},
+    ]
+
+    # Post all spendings
+    for spending in spendings_data:
+        client.post("/spendings/", json=spending)
+
+    # Test filtering by description (partial match)
+    response = client.get("/spendings/?description=Gro")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 2  # Expecting 2 records (Groceries, Grocery)
+
+    # Test filtering by date range
+    response = client.get("/spendings/?start_date=2024-10-17&end_date=2024-10-19")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 4  # Expecting 4 records (2 from 17th, 1 from 18th, and 1 from 19th)
+
+    # Test filtering by currency
+    response = client.get("/spendings/?currency=USD")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 6  # Expecting 6 records
+
+    # Test filtering by category
+    response = client.get("/spendings/?category=Food")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 3  # Expecting 3 records
+
+    # Test filtering by amount
+    response = client.get("/spendings/?amount=50.0")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 1  # Expecting 1 record (Groceries)
+
+    # Test combination of filters
+    response = client.get(
+        "/spendings/?description=Gro&start_date=2024-10-17&end_date=2024-10-20&currency=USD&category=Food&amount=50.0"
+    )
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 1  # Expecting 1 record (Groceries)
+
+    # Test with skip and limit parameters
+    response = client.get("/spendings/?skip=1&limit=2")
+    assert response.status_code == 200
+    assert len(response.json()["spendings"]) == 2  # Expecting 2 records

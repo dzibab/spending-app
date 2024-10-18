@@ -1,3 +1,5 @@
+from typing import Optional
+from datetime import date, datetime
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -47,16 +49,45 @@ def get_spending(spending_id: int, db: Session = Depends(get_db)):
     "/spendings/",
     response_model=dict,
     summary="Get spendings",
-    description="Retrieves a list of spending records with optional pagination.",
+    description="Retrieves a list of spending records with pagination and optional filtering.",
 )
-def get_spendings(skip: int = Query(0, ge=0), limit: int = Query(10, gt=0), db: Session = Depends(get_db)):
-    total = db.query(SpendingDB).count()  # Get total count of records
-    spendings = db.query(SpendingDB).offset(skip).limit(limit).all()
+def get_spendings(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(10, gt=0),
+    description: Optional[str] = None,
+    start_date: Optional[date] = None,
+    end_date: Optional[date] = None,
+    currency: Optional[str] = None,
+    category: Optional[str] = None,
+    amount: Optional[float] = None,
+    db: Session = Depends(get_db)
+):
+    query = db.query(SpendingDB)
+
+    # Apply filters if provided
+    if description:
+        query = query.filter(SpendingDB.description.ilike(f"%{description}%"))
+    if start_date:
+        start_datetime = datetime.combine(start_date, datetime.min.time())
+        query = query.filter(SpendingDB.date >= start_datetime)  # Start date filter
+    if end_date:
+        end_datetime = datetime.combine(end_date, datetime.max.time())
+        query = query.filter(SpendingDB.date <= end_datetime)  # End date filter
+
+    if currency:
+        query = query.filter(SpendingDB.currency == currency)
+    if category:
+        query = query.filter(SpendingDB.category == category)
+    if amount:
+        query = query.filter(SpendingDB.amount == amount)
+
+    total = query.count()  # Get total count of records after filtering
+    spendings = query.offset(skip).limit(limit).all()
 
     # Convert spendings to SpendingResponse model using model_validate
     spendings_response = [SpendingResponse.model_validate(spending) for spending in spendings]
 
-    return {"spendings": spendings_response, "total": total}  # Return as a dictionary
+    return {"spendings": spendings_response, "total": total}
 
 
 # Update Spending
