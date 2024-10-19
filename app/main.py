@@ -45,6 +45,19 @@ async def read_auth_page(request: Request):
     return templates.TemplateResponse("main.html", {"request": request, "content": content})
 
 
+@app.get("/register", response_class=HTMLResponse)
+async def read_register_page(request: Request):
+    content = """
+        <h1>Register</h1>
+        <form action="/register" method="post">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Register</button>
+        </form>
+    """
+    return templates.TemplateResponse("main.html", {"request": request, "content": content})
+
+
 @app.get("/add-spending", response_class=HTMLResponse)
 async def read_add_spending_page(request: Request):
     content = """
