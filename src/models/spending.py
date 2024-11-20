@@ -13,14 +13,14 @@ class Spending(BaseModel):
     category: str
 
 
-class CreateSpending(Spending):
+class CreateSpending(BaseModel):
     amount: float
     currency: str
     category: str
     description: str | None
 
 
-class UpdateSpending(Spending):
+class UpdateSpending(BaseModel):
     id: UUID
     amount: float | None
     description: str | None
