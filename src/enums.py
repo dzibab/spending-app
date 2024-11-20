@@ -2,14 +2,14 @@ from enum import StrEnum
 
 
 # Default currencies enum
-class Currency(StrEnum):
+class CurrencyEnum(StrEnum):
     USD = "USD"
     EUR = "EUR"
     PLN = "PLN"
 
 
 # Default categories enum
-class Category(StrEnum):
+class CategoryEnum(StrEnum):
     CAR = "Car"
     FOOD = "Food"
     TRANSPORT = "Transport"

@@ -13,7 +13,7 @@ class Spending(BaseModel):
     category_id: UUID
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class CreateSpending(BaseModel):

@@ -3,15 +3,20 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from src.routers.spending import router as spending_router
-from src.db.session import engine
+from src.db.session import async_session, engine, initialize_default_data
 from src.db.models import Base
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield
+    # Get the engine directly
+    async with async_session() as db:
+        # Create tables
+        async with engine.connect() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        # Initialize default categories and currencies
+        await initialize_default_data(db)
+        yield
 
 
 app = FastAPI(lifespan=lifespan)
