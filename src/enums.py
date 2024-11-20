@@ -1,10 +1,12 @@
 from enum import StrEnum
 
+
 # Default currencies enum
 class Currency(StrEnum):
     USD = "USD"
     EUR = "EUR"
     PLN = "PLN"
+
 
 # Default categories enum
 class Category(StrEnum):

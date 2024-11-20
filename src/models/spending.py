@@ -9,23 +9,28 @@ class Spending(BaseModel):
     amount: float
     description: str
     date: date
-    currency: str
-    category: str
+    currency_id: UUID
+    category_id: UUID
+
+    class Config:
+        orm_mode = True
 
 
 class CreateSpending(BaseModel):
     amount: float
-    currency: str
-    category: str
+    date: date
+    currency_id: UUID
+    category_id: UUID
     description: str | None
 
 
 class UpdateSpending(BaseModel):
     id: UUID
     amount: float | None
+    date: date | None
     description: str | None
-    currency: str | None
-    category: str | None
+    currency_id: UUID | None
+    category_id: UUID | None
 
 
 class DeleteSpending(BaseModel):
