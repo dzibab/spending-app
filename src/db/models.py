@@ -1,4 +1,3 @@
-# models.py
 from sqlalchemy import Column, Integer, String, Date, UUID
 from sqlalchemy.ext.declarative import declarative_base
 
