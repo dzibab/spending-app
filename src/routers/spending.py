@@ -1,34 +1,68 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.exc import NoResultFound
+
+from src.db.models import Spending as SpendingDB
+from src.db.session import get_db
+from src.models.spending import CreateSpending, UpdateSpending, Spending
 
 
 router = APIRouter(prefix="/spending", tags=["spending"])
 
 
-@router.get("/")
-async def get_spendings():
-    # return all spendings.
-    return {"message": "Hello, World!"}
+@router.get("/", response_model=list[Spending])
+async def get_spendings(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(SpendingDB))
+    spendings = result.scalars().all()
+    return spendings
 
 
-@router.post("/")
-async def create_spending():
-    # create a spending.
-    return {"message": "Hello, World!"}
+@router.post("/", response_model=Spending)
+async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(get_db)):
+    new_spending = SpendingDB(**spending.model_dump())
+    db.add(new_spending)
+    await db.commit()
+    await db.refresh(new_spending)
+    return new_spending
 
 
-@router.get("/{spending_id}")
-async def get_spending(spending_id: int):
-    # return a spending.
-    return {"message": "Hello, World!"}
+@router.get("/{spending_id}", response_model=Spending)
+async def get_spending(spending_id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
+        spending = result.scalar_one()
+        return spending
+    except NoResultFound:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
 
 
-@router.put("/{spending_id}")
-async def update_spending(spending_id: int):
-    # update a spending.
-    return {"message": "Hello, World!"}
+@router.put("/{spending_id}", response_model=Spending)
+async def update_spending(
+    spending_id: str, update_data: UpdateSpending, db: AsyncSession = Depends(get_db)
+):
+    try:
+        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
+        spending = result.scalar_one()
+
+        for key, value in update_data.model_dump(exclude_unset=True).items():
+            setattr(spending, key, value)
+
+        db.add(spending)
+        await db.commit()
+        await db.refresh(spending)
+        return spending
+    except NoResultFound:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
 
 
-@router.delete("/{spending_id}")
-async def delete_spending(spending_id: int):
-    # delete a spending.
-    return {"message": "Hello, World!"}
+@router.delete("/{spending_id}", response_model=dict)
+async def delete_spending(spending_id: str, db: AsyncSession = Depends(get_db)):
+    try:
+        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
+        spending = result.scalar_one()
+        await db.delete(spending)
+        await db.commit()
+        return {"message": "Spending deleted successfully"}
+    except NoResultFound:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
