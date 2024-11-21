@@ -34,14 +34,7 @@ async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(g
     if not category:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Category not found")
 
-    # Create new spending entry
-    new_spending = SpendingDB(
-        amount=spending.amount,
-        date=spending.date,
-        currency_id=spending.currency_id,
-        category_id=spending.category_id,
-        description=spending.description,
-    )
+    new_spending = SpendingDB(**spending.model_dump(exclude_unset=True))
 
     db.add(new_spending)
     await db.commit()
