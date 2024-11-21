@@ -1,5 +1,5 @@
 from uuid import UUID
-from datetime import date
+import datetime
 
 from pydantic import BaseModel
 
@@ -7,8 +7,8 @@ from pydantic import BaseModel
 class Spending(BaseModel):
     id: UUID
     amount: float
-    description: str
-    date: date
+    description: str | None
+    date: datetime.date
     currency_id: UUID
     category_id: UUID
 
@@ -18,19 +18,19 @@ class Spending(BaseModel):
 
 class CreateSpending(BaseModel):
     amount: float
-    date: date
+    date: datetime.date | None = None
     currency_id: UUID
     category_id: UUID
-    description: str | None
+    description: str | None = None
 
 
 class UpdateSpending(BaseModel):
     id: UUID
-    amount: float | None
-    date: date | None
-    description: str | None
-    currency_id: UUID | None
-    category_id: UUID | None
+    amount: float | None = None
+    date: datetime.date | None = None
+    description: str | None = None
+    currency_id: UUID | None = None
+    category_id: UUID | None = None
 
 
 class DeleteSpending(BaseModel):

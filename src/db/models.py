@@ -1,4 +1,5 @@
 import uuid
+import datetime
 
 from sqlalchemy import Column, Integer, String, Date, UUID, ForeignKey
 from sqlalchemy.orm import relationship
@@ -12,9 +13,9 @@ class Spending(Base):
     __tablename__ = "spendings"
 
     id = Column(UUID, primary_key=True, default=uuid.uuid4)
-    description = Column(String, index=True)
+    description = Column(String, index=True, nullable=True)
     amount = Column(Integer)
-    date = Column(Date)
+    date = Column(Date, default=datetime.date.today)
     currency_id = Column(UUID, ForeignKey("currencies.id"))
     category_id = Column(UUID, ForeignKey("categories.id"))
 
