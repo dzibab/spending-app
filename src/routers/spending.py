@@ -5,7 +5,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import NoResultFound
 
-from src.db.models import Spending as SpendingDB, Currency, Category
+from src.db.models import Spending as SpendingDB, Currency as CurrencyDB, Category as CategoryDB
 from src.db.session import get_db
 from src.models.spending import CreateSpending, UpdateSpending, Spending
 
@@ -23,8 +23,8 @@ async def get_spendings(db: AsyncSession = Depends(get_db)):
 @router.post("/", response_model=Spending)
 async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(get_db)):
     # Fetch related currency and category from the database
-    currency = await db.execute(select(Currency).where(Currency.id == spending.currency_id))
-    category = await db.execute(select(Category).where(Category.id == spending.category_id))
+    currency = await db.execute(select(CurrencyDB).where(CurrencyDB.id == spending.currency_id))
+    category = await db.execute(select(CategoryDB).where(CategoryDB.id == spending.category_id))
 
     currency = currency.scalar_one_or_none()
     category = category.scalar_one_or_none()
