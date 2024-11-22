@@ -4,8 +4,8 @@ from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.future import select
 
-from src.db.models import Currency, Category
-from src.enums import CurrencyEnum, CategoryEnum
+from backend.db.models import Currency, Category
+from backend.enums import CurrencyEnum, CategoryEnum
 
 
 DATABASE_URL = "sqlite+aiosqlite:///./test.db"

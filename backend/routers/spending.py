@@ -5,9 +5,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.exc import NoResultFound
 
-from src.db.models import Spending as SpendingDB, Currency as CurrencyDB, Category as CategoryDB
-from src.db.session import get_db
-from src.models.spending import CreateSpending, UpdateSpending, Spending
+from backend.db.models import Spending as SpendingDB, Currency as CurrencyDB, Category as CategoryDB
+from backend.db.session import get_db
+from backend.models.spending import CreateSpending, UpdateSpending, Spending
 
 
 router = APIRouter(prefix="/spending", tags=["spending"])

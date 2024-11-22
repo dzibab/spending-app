@@ -2,9 +2,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from src.routers.spending import router as spending_router
-from src.db.session import async_session, engine, initialize_default_data
-from src.db.models import Base
+from backend.routers.spending import router as spending_router
+from backend.db.session import async_session, engine, initialize_default_data
+from backend.db.models import Base
 
 
 @asynccontextmanager
