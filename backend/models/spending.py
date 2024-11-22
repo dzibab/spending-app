@@ -25,7 +25,6 @@ class CreateSpending(BaseModel):
 
 
 class UpdateSpending(BaseModel):
-    id: UUID
     amount: float | None = None
     date: datetime.date | None = None
     description: str | None = None
