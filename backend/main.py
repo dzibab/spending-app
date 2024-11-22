@@ -3,6 +3,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from backend.routers.spending import router as spending_router
+from backend.routers.currency import router as currency_router
+from backend.routers.category import router as category_router
 from backend.db.session import async_session, engine, initialize_default_data
 from backend.db.models import Base
 
@@ -20,7 +22,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(lifespan=lifespan)
+
+
+# Routers
 app.include_router(spending_router)
+app.include_router(currency_router)
+app.include_router(category_router)
 
 
 @app.get("/")
