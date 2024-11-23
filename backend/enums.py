@@ -1,23 +1,26 @@
 from enum import StrEnum
 
 
-# Default currencies enum
 class CurrencyEnum(StrEnum):
     USD = "USD"
     EUR = "EUR"
     PLN = "PLN"
 
 
-# Default categories enum
 class CategoryEnum(StrEnum):
+    BILLS = "Bills"
     CAR = "Car"
-    FOOD = "Food"
-    TRANSPORT = "Transport"
-    ENTERTAINMENT = "Entertainment"
-    EATING_OUT = "Eating Out"
-    HEALTH = "Health"
     CLOTHES = "Clothes"
-    TRAVEL = "Travel"
-    HOUSE = "House"
-    GIFTS = "Gifts"
     COMMUNICATION = "Communication"
+    EATING_OUT = "Eating Out"
+    ENTERTAINMENT = "Entertainment"
+    FOOD = "Food"
+    GIFTS = "Gifts"
+    HEALTH = "Health"
+    HOUSE = "House"
+    PETS = "Pets"
+    SPORT = "Sport"
+    TAXI = "Taxi"
+    TOILETRY = "Toiletry"
+    TRANSPORT = "Transport"
+    TRAVEL = "Travel"
