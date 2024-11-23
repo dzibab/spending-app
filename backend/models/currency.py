@@ -1,10 +1,10 @@
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class CurrencyBase(BaseModel):
-    name: str
+    name: str = Field(min_length=3, max_length=3)
 
 
 class CurrencyCreate(CurrencyBase):
