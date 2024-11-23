@@ -35,3 +35,11 @@ class Category(Base):
 
     id = Column(UUID, primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, index=True)
+
+
+class User(Base):
+    __tablename__ = "users"
+
+    id = Column(UUID, primary_key=True, default=uuid.uuid4)
+    email = Column(String, unique=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
