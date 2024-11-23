@@ -30,7 +30,7 @@ async def create_category(category: CategoryCreate, db: AsyncSession = Depends(g
             status_code=status.HTTP_400_BAD_REQUEST, detail="Category already exists"
         )
 
-    new_category = Category(name=category.name)
+    new_category = Category(name=category.name.capitalize())
     db.add(new_category)
     await db.commit()
     await db.refresh(new_category)

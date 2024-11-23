@@ -12,7 +12,7 @@ class CategoryEnum(StrEnum):
     CAR = "Car"
     CLOTHES = "Clothes"
     COMMUNICATION = "Communication"
-    EATING_OUT = "Eating Out"
+    EATING_OUT = "Eating out"
     ENTERTAINMENT = "Entertainment"
     FOOD = "Food"
     GIFTS = "Gifts"
