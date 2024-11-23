@@ -28,8 +28,3 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(spending_router)
 app.include_router(currency_router)
 app.include_router(category_router)
-
-
-@app.get("/")
-async def read_root():
-    return {"message": "Hello, World!"}
