@@ -12,6 +12,15 @@ from backend.models.currency import CurrencyCreate, CurrencyResponse
 router = APIRouter(prefix="/currency", tags=["currency"])
 
 
+@router.get("/", response_model=list[CurrencyResponse])
+async def get_currencies(db: AsyncSession = Depends(get_db)):
+    result = await db.execute(select(Currency))
+    currencies = result.scalars().all()
+    if not currencies:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No currencies found")
+    return currencies
+
+
 @router.post("/", response_model=CurrencyResponse, status_code=status.HTTP_201_CREATED)
 async def create_currency(currency: CurrencyCreate, db: AsyncSession = Depends(get_db)):
     result = await db.execute(select(Currency).where(Currency.name == currency.name))
