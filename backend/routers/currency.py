@@ -30,7 +30,7 @@ async def create_currency(currency: CurrencyCreate, db: AsyncSession = Depends(g
             status_code=status.HTTP_400_BAD_REQUEST, detail="Currency already exists"
         )
 
-    new_currency = Currency(name=currency.name)
+    new_currency = Currency(name=currency.name.upper())
     db.add(new_currency)
     await db.commit()
     await db.refresh(new_currency)
