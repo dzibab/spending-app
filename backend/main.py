@@ -13,20 +13,18 @@ from backend.db.models import Base
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Get the engine directly
     async with async_session() as db:
-        # Create tables
         async with engine.connect() as conn:
             await conn.run_sync(Base.metadata.create_all)
-        # Initialize default categories and currencies
+
         await initialize_default_data(db)
+
         yield
 
 
 app = FastAPI(lifespan=lifespan)
 
 
-# Routers
 app.include_router(spending_router)
 app.include_router(currency_router)
 app.include_router(category_router)
