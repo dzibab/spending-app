@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from backend.db.session import get_db
 from backend.models.user import UserCreate, UserUpdate, UserResponse
 from backend.db.models import User as UserDB
-from backend.utils.security import hash_password, get_current_user
+from backend.utils.security import hash_password
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -37,10 +37,7 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
 async def read_user(
     user_id: UUID,
     db: AsyncSession = Depends(get_db),
-    current_user: UserDB = Depends(get_current_user),
 ):
-    if current_user.id != user_id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Forbidden")
     result = await db.execute(select(UserDB).filter(UserDB.id == user_id))
     user = result.scalars().first()
     if not user:
