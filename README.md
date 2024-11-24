@@ -1,5 +1,30 @@
 # spending-app
 
+## .env File
+
+The `.env` file is used to store environment variables that are essential for the application to run securely and configure certain settings.
+
+### Creating and Configuring the `.env` File
+
+1. **Create a `.env` file** in the root directory of the project.
+
+2. Add the following variables to the `.env` file:
+
+    ```env
+    SECRET_KEY=your_secret_key_here
+    ```
+
+   - `SECRET_KEY`: This key is used for cryptographic operations, such as password hashing and generating tokens. It must be kept secret. You can generate a secure random string for it using various tools or libraries.
+
+### How to Set Up `SECRET_KEY`
+
+To create a strong `SECRET_KEY`, you can use Python's built-in libraries. Here is an example of how to generate a secure key:
+
+```python
+import secrets
+print(secrets.token_hex(32))
+```
+
 ## Managing the Spending App Backend with Docker Scripts
 
 This guide explains how to use the provided Bash scripts to manage the Spending App Backend using Docker.
