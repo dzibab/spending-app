@@ -7,7 +7,7 @@ from sqlalchemy.future import select
 from backend.db.session import get_db
 from backend.models.user import UserCreate, UserUpdate, UserResponse
 from backend.db.models import User as UserDB
-from backend.utils.security import hash_password
+from backend.utils.security import hash_password, get_current_user
 
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -31,6 +31,11 @@ async def create_user(user: UserCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(new_user)
     return new_user
+
+
+@router.get("/me")
+async def read_users_me(current_user: UserDB = Depends(get_current_user)):
+    return current_user
 
 
 @router.get("/{user_id:uuid}", response_model=UserResponse)
