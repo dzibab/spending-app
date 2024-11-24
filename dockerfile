@@ -8,6 +8,7 @@ RUN pip install --no-cache-dir uv
 RUN uv pip install --no-cache-dir --system -r requirements.txt
 
 COPY /backend /app/backend
+COPY .env /app/.env
 
 EXPOSE 8000
 
