@@ -11,5 +11,13 @@ export const WrapperS = styled.section`
 export const HeadingS = styled.div`
   display: flex;
   flex-direction: row;
+  justify-content: center;
   gap: 3em;
 `;
+
+export const ButtonsBlockS = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: 3em;
+  justify-content: center;
+`

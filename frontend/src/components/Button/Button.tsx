@@ -7,6 +7,7 @@ interface IButtonProps {
   onClick: VoidFunction;
   children: React.ReactNode;
   isDisabled?: boolean;
+  bgColor?: string
 }
 
 export const Button: React.FC<IButtonProps> = ({
@@ -15,12 +16,14 @@ export const Button: React.FC<IButtonProps> = ({
   className,
   isDisabled = false,
   onClick,
+  bgColor
 }) => (
   <ButtonS
     disabled={isDisabled}
     type={type}
     className={className}
     onClick={onClick}
+    bgColor={bgColor}
   >
     {children}
   </ButtonS>
