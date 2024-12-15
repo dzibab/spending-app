@@ -3,14 +3,17 @@ import datetime
 
 from pydantic import BaseModel
 
+from backend.models.currency import CurrencyResponse
+from backend.models.category import CategoryResponse
 
-class Spending(BaseModel):
+
+class SpendingResponse(BaseModel):
     id: UUID
     amount: float
     description: str | None
     date: datetime.date
-    currency_id: UUID
-    category_id: UUID
+    currency: CurrencyResponse
+    category: CategoryResponse
 
     class Config:
         from_attributes = True
@@ -30,7 +33,3 @@ class UpdateSpending(BaseModel):
     description: str | None = None
     currency_id: UUID | None = None
     category_id: UUID | None = None
-
-
-class DeleteSpending(BaseModel):
-    id: UUID

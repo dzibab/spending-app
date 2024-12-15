@@ -19,8 +19,8 @@ class Spending(Base):
     currency_id = Column(UUID, ForeignKey("currencies.id"))
     category_id = Column(UUID, ForeignKey("categories.id"))
 
-    currency = relationship("Currency")
-    category = relationship("Category")
+    currency = relationship("Currency", lazy="joined")
+    category = relationship("Category", lazy="joined")
 
 
 class Currency(Base):
