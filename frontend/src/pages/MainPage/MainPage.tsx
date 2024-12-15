@@ -1,21 +1,21 @@
-import dayjs, { Dayjs } from 'dayjs'
-import { useState } from 'react'
+import dayjs, { Dayjs } from 'dayjs';
+import { useState } from 'react';
 
-import { ButtonsBlockS, HeadingS, WrapperS } from './MainPage.styles'
-import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory'
-import { Button } from 'components'
+import { ButtonsBlockS, HeadingS, WrapperS } from './MainPage.styles';
+import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
+import { Button, ModalWindow } from 'components';
 
 export const MainPage = () => {
-  const today = dayjs()
-  const [currentMonth, setCurrentMonth] = useState<Dayjs>(today)
+  const today = dayjs();
+  const [currentMonth, setCurrentMonth] = useState<Dayjs>(today);
 
   const handleChangeMonth = (isPrevious: boolean) => {
     if (isPrevious) {
-      setCurrentMonth((prev) => prev.subtract(1, 'month'))
+      setCurrentMonth(prev => prev.subtract(1, 'month'));
     } else {
-      setCurrentMonth((prev) => prev.add(1, 'month'))
+      setCurrentMonth(prev => prev.add(1, 'month'));
     }
-  }
+  };
 
   return (
     <WrapperS>
@@ -40,7 +40,7 @@ export const MainPage = () => {
               { x: 'Cats', y: 30 },
               { x: 'Dogs', y: 35 },
               { x: 'Birds', y: 25 },
-              { x: 'Rabbits', y: 10 }
+              { x: 'Rabbits', y: 10 },
             ]}
             innerRadius={68}
             labelRadius={50}
@@ -56,10 +56,16 @@ export const MainPage = () => {
         </svg>
       </div>
       <ButtonsBlockS>
-        <Button bgColor="red" onClick={() =>{}}>-</Button>
-        <Button bgColor="green" onClick={() =>{}}>+</Button>
+        <Button bgColor="red" onClick={() => {}}>
+          -
+        </Button>
+        <Button bgColor="green" onClick={() => {}}>
+          +
+        </Button>
       </ButtonsBlockS>
+      <ModalWindow isOpen={true} onClose={() => {}}>
+        <div>Hello</div>
+      </ModalWindow>
     </WrapperS>
-  )
-}
-
+  );
+};

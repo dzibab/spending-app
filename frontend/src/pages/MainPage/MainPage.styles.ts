@@ -20,4 +20,4 @@ export const ButtonsBlockS = styled.div`
   flex-direction: row;
   gap: 3em;
   justify-content: center;
-`
+`;
