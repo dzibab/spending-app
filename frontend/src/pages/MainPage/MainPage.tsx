@@ -1,9 +1,10 @@
 import dayjs, { Dayjs } from 'dayjs';
 import { useState } from 'react';
+import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
 
 import { ButtonsBlockS, HeadingS, WrapperS } from './MainPage.styles';
-import { VictoryLabel, VictoryPie, VictoryTheme } from 'victory';
-import { Button, ModalWindow } from 'components';
+import { Button } from 'components';
+import { AddSpendingModal } from './AddSpendingModal/AddSpendingModal';
 
 export const MainPage = () => {
   const today = dayjs();
@@ -63,9 +64,7 @@ export const MainPage = () => {
           +
         </Button>
       </ButtonsBlockS>
-      <ModalWindow isOpen={true} onClose={() => {}}>
-        <div>Hello</div>
-      </ModalWindow>
+      <AddSpendingModal isOpen={true} onClose={() => {}} />
     </WrapperS>
   );
 };

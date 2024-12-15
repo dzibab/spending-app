@@ -29,8 +29,8 @@ export const ModalBodyS = styled.div`
 export const CloseButtonS = styled.button`
   background-color: transparent;
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -1em;
+  right: -1em;
   color: black;
   text-align: right;
   outline: none;

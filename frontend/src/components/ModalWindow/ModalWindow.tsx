@@ -5,16 +5,9 @@ import {
   ModalBodyS,
   ModalWrapperS,
 } from './ModalWindow.styled';
+import { IModalWindowProps } from 'commonTypes';
 
-interface IModalWindow {
-  isOpen: boolean;
-  children: React.ReactNode;
-  title?: string;
-  footer?: React.ReactNode;
-  onClose: VoidFunction;
-}
-
-export const ModalWindow: React.FC<IModalWindow> = ({
+export const ModalWindow: React.FC<IModalWindowProps> = ({
   isOpen,
   onClose,
   title,
