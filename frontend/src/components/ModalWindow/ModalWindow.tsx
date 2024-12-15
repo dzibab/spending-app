@@ -1,11 +1,15 @@
 import ReactDOM from 'react-dom';
+import { useRef } from 'react';
+
+import { IModalWindowProps } from 'commonTypes';
+
 import {
   CloseButtonS,
   HeadingS,
   ModalBodyS,
   ModalWrapperS,
 } from './ModalWindow.styled';
-import { IModalWindowProps } from 'commonTypes';
+import { useClickOutside } from 'hooks';
 
 export const ModalWindow: React.FC<IModalWindowProps> = ({
   isOpen,
@@ -14,11 +18,15 @@ export const ModalWindow: React.FC<IModalWindowProps> = ({
   children,
   footer,
 }) => {
+  const ref = useRef<HTMLDivElement | null>(null);
+
+  useClickOutside({ ref, callback: onClose });
+
   if (!isOpen) return null;
 
   return ReactDOM.createPortal(
     <ModalWrapperS>
-      <ModalBodyS>
+      <ModalBodyS ref={ref}>
         <HeadingS>
           {title && <p>{title}</p>}
           <CloseButtonS onClick={onClose}>X</CloseButtonS>

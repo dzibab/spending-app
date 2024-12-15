@@ -9,6 +9,15 @@ import { AddSpendingModal } from './AddSpendingModal/AddSpendingModal';
 export const MainPage = () => {
   const today = dayjs();
   const [currentMonth, setCurrentMonth] = useState<Dayjs>(today);
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+  };
+
+  const handleOpenModal = () => {
+    setIsOpen(true);
+  };
 
   const handleChangeMonth = (isPrevious: boolean) => {
     if (isPrevious) {
@@ -60,11 +69,11 @@ export const MainPage = () => {
         <Button bgColor="red" onClick={() => {}}>
           -
         </Button>
-        <Button bgColor="green" onClick={() => {}}>
+        <Button bgColor="green" onClick={handleOpenModal}>
           +
         </Button>
       </ButtonsBlockS>
-      <AddSpendingModal isOpen={true} onClose={() => {}} />
+      <AddSpendingModal isOpen={isOpen} onClose={handleCloseModal} />
     </WrapperS>
   );
 };
