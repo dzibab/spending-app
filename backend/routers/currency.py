@@ -46,4 +46,3 @@ async def delete_currency(currency_id: UUID, db: AsyncSession = Depends(get_db))
 
     await db.delete(currency)
     await db.commit()
-    return {"detail": "Currency deleted successfully"}

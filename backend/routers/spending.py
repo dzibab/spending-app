@@ -43,7 +43,9 @@ async def get_spendings(
 
     result = await db.execute(query)
     spendings = result.scalars().all()
-    return [SpendingResponse.model_validate(spending) for spending in spendings]
+    return [
+        SpendingResponse.model_validate(spending, from_attributes=True) for spending in spendings
+    ]
 
 
 @router.get("/{spending_id:uuid}", response_model=SpendingResponse)
@@ -51,7 +53,7 @@ async def get_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
         spending = result.scalar_one()
-        return SpendingResponse.model_validate(spending)
+        return SpendingResponse.model_validate(spending, from_attributes=True)
     except NoResultFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
 
@@ -66,7 +68,10 @@ async def get_spendings_current_month(db: AsyncSession = Depends(get_db)):
             select(SpendingDB).where(SpendingDB.date >= start_of_month, SpendingDB.date <= today)
         )
         spendings = result.scalars().all()
-        return [SpendingResponse.model_validate(spending) for spending in spendings]
+        return [
+            SpendingResponse.model_validate(spending, from_attributes=True)
+            for spending in spendings
+        ]
     except NoResultFound:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="No spendings found for the current month"
@@ -92,7 +97,7 @@ async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(g
     db.add(new_spending)
     await db.commit()
     await db.refresh(new_spending)
-    return SpendingResponse.model_validate(new_spending)
+    return SpendingResponse.model_validate(new_spending, from_attributes=True)
 
 
 @router.put("/{spending_id:uuid}", response_model=SpendingResponse)
@@ -110,18 +115,17 @@ async def update_spending(
         db.add(spending)
         await db.commit()
         await db.refresh(spending)
-        return SpendingResponse.model_validate(spending)
+        return SpendingResponse.model_validate(spending, from_attributes=True)
     except NoResultFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
 
 
-@router.delete("/{spending_id:uuid}", response_model=dict)
+@router.delete("/{spending_id:uuid}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
     try:
         result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
         spending = result.scalar_one()
         await db.delete(spending)
         await db.commit()
-        return {"message": "Spending deleted successfully"}
     except NoResultFound:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
