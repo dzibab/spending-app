@@ -5,7 +5,6 @@ from sqlalchemy.future import select
 
 from backend.db.session import get_db
 from backend.db.models import User as UserDB
-
 from backend.models.auth import TokenResponse
 from backend.utils.security import verify_password, create_access_token
 
