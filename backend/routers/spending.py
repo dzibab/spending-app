@@ -15,7 +15,7 @@ from backend.db.models import (
     Spending as SpendingDB,
     Currency as CurrencyDB,
     Category as CategoryDB,
-    )
+)
 from backend.db.session import get_db
 from backend.models.spending import (
     CreateSpending,
