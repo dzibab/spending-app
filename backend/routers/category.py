@@ -27,7 +27,9 @@ async def get_categories(db: AsyncSession = Depends(get_db)):
     categories = result.scalars().all()
     if not categories:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No categories found")
-    return [CategoryResponse.model_validate(category, from_attributes=True) for category in categories]
+    return [
+        CategoryResponse.model_validate(category, from_attributes=True) for category in categories
+    ]
 
 
 @router.post("/", response_model=CategoryResponse, status_code=status.HTTP_201_CREATED)
