@@ -15,7 +15,7 @@ class SpendingResponse(BaseModel):
     currency: CurrencyResponse
     category: CategoryResponse
 
-    class Config:
+    class ConfigDict:
         from_attributes = True
 
 

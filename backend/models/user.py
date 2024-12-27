@@ -18,5 +18,5 @@ class UserUpdate(BaseModel):
 class UserResponse(UserBase):
     id: UUID
 
-    class Config:
+    class ConfigDict:
         from_attributes = True

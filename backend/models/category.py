@@ -14,5 +14,5 @@ class CategoryCreate(CategoryBase):
 class CategoryResponse(CategoryBase):
     id: UUID
 
-    class Config:
+    class ConfigDict:
         from_attributes = True

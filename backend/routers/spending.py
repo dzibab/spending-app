@@ -32,7 +32,7 @@ router = APIRouter(prefix="/spending", tags=["spending"])
 async def get_spendings(
     db: AsyncSession = Depends(get_db),
     start_date: date | None = Query(None, description="Start date for filtering spendings"),
-    end_date: date | None = Query(None, description="End date for filtering spendings")
+    end_date: date | None = Query(None, description="End date for filtering spendings"),
 ):
     query = select(SpendingDB)
 
