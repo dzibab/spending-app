@@ -6,6 +6,9 @@ class CurrencyEnum(StrEnum):
     EUR = "EUR"
     PLN = "PLN"
 
+    def __len__(self):
+        return len(self.__members__)
+
 
 class CategoryEnum(StrEnum):
     BILLS = "Bills"
@@ -24,3 +27,6 @@ class CategoryEnum(StrEnum):
     TOILETRY = "Toiletry"
     TRANSPORT = "Transport"
     TRAVEL = "Travel"
+
+    def __len__(self):
+        return len(self.__members__)

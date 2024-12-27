@@ -3,12 +3,31 @@ from uuid import uuid4
 import pytest
 from fastapi import status
 
+from backend.enums import CategoryEnum
+
 
 @pytest.fixture
 def create_category(test_client):
     response = test_client.post("/api/category/", json={"name": "Test_Category"})
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()["id"]
+
+
+@pytest.mark.asyncio
+async def test_get_all_categories(test_client):
+    response = test_client.get("/api/category/")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+
+    # add categories
+    for category in CategoryEnum:
+        response = test_client.post("/api/category/", json={"name": category.value})
+        assert response.status_code == status.HTTP_201_CREATED
+
+    # verify categories can be retrieved
+    response = test_client.get("/api/category/")
+    categories = response.json()
+    assert isinstance(categories, list)
+    assert len(categories) == len(CategoryEnum)
 
 
 @pytest.mark.asyncio
