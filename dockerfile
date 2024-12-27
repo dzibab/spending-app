@@ -4,8 +4,7 @@ WORKDIR /app
 
 COPY requirements.txt /app
 
-RUN pip install --no-cache-dir uv
-RUN uv pip install --no-cache-dir --system -r requirements.txt
+RUN pip install --no-cache-dir uv && uv pip install --no-cache-dir --system -r requirements.txt
 
 COPY /backend /app/backend
 COPY .env /app/.env
