@@ -1,5 +1,9 @@
 #!/bin/bash
-
+# Check if the Docker container is running
+if [ "$(docker ps -q -f name=spending-app-backend-container)" ]; then
+  # Stop and remove the container if it is running
+  ./stop_backend.sh
+fi
 # Create and run the Docker container in detached mode
 docker build -t spending-app-backend .
 
