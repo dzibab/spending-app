@@ -46,4 +46,3 @@ async def delete_category(category_id: UUID, db: AsyncSession = Depends(get_db))
 
     await db.delete(category)
     await db.commit()
-    return {"detail": "Category deleted successfully"}
