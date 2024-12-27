@@ -28,7 +28,7 @@ from backend.models.spending import (
 router = APIRouter(prefix="/spending", tags=["spending"])
 
 
-async def fetch_spending_by_id(spending_id: UUID, db: AsyncSession):
+async def get_spending_by_id(spending_id: UUID, db: AsyncSession):
     try:
         result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
         return result.scalar_one()
@@ -58,7 +58,7 @@ async def get_spendings(
 
 @router.get("/{spending_id:uuid}", response_model=SpendingResponse)
 async def get_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
-    spending = await fetch_spending_by_id(spending_id, db)
+    spending = await get_spending_by_id(spending_id, db)
     return SpendingResponse.model_validate(spending, from_attributes=True)
 
 
@@ -101,7 +101,7 @@ async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(g
 async def update_spending(
     spending_id: UUID, update_data: UpdateSpending, db: AsyncSession = Depends(get_db)
 ):
-    spending = await fetch_spending_by_id(spending_id, db)
+    spending = await get_spending_by_id(spending_id, db)
 
     for key, value in update_data.model_dump(exclude_unset=True).items():
         setattr(spending, key, value)
@@ -114,6 +114,6 @@ async def update_spending(
 
 @router.delete("/{spending_id:uuid}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
-    spending = await fetch_spending_by_id(spending_id, db)
+    spending = await get_spending_by_id(spending_id, db)
     await db.delete(spending)
     await db.commit()
