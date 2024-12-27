@@ -5,6 +5,7 @@ from fastapi import (
     APIRouter,
     Depends,
     HTTPException,
+    Query,
     status,
 )
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,8 +29,19 @@ router = APIRouter(prefix="/spending", tags=["spending"])
 
 
 @router.get("/", response_model=list[SpendingResponse])
-async def get_spendings(db: AsyncSession = Depends(get_db)):
-    result = await db.execute(select(SpendingDB))
+async def get_spendings(
+    db: AsyncSession = Depends(get_db),
+    start_date: date | None = Query(None, description="Start date for filtering spendings"),
+    end_date: date | None = Query(None, description="End date for filtering spendings")
+):
+    query = select(SpendingDB)
+
+    if start_date:
+        query = query.where(SpendingDB.date >= start_date)
+    if end_date:
+        query = query.where(SpendingDB.date <= end_date)
+
+    result = await db.execute(query)
     spendings = result.scalars().all()
     return [SpendingResponse.model_validate(spending) for spending in spendings]
 
