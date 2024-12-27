@@ -3,8 +3,8 @@ from datetime import date
 
 from fastapi import (
     APIRouter,
-    Depends,
     HTTPException,
+    Depends,
     Query,
     status,
 )
@@ -26,6 +26,14 @@ from backend.models.spending import (
 
 
 router = APIRouter(prefix="/spending", tags=["spending"])
+
+
+async def fetch_spending_by_id(spending_id: UUID, db: AsyncSession):
+    try:
+        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
+        return result.scalar_one()
+    except NoResultFound:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
 
 
 @router.get("/", response_model=list[SpendingResponse])
@@ -50,12 +58,8 @@ async def get_spendings(
 
 @router.get("/{spending_id:uuid}", response_model=SpendingResponse)
 async def get_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
-    try:
-        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
-        spending = result.scalar_one()
-        return SpendingResponse.model_validate(spending, from_attributes=True)
-    except NoResultFound:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
+    spending = await fetch_spending_by_id(spending_id, db)
+    return SpendingResponse.model_validate(spending, from_attributes=True)
 
 
 @router.get("/current-month", response_model=list[SpendingResponse])
@@ -63,24 +67,17 @@ async def get_spendings_current_month(db: AsyncSession = Depends(get_db)):
     today = date.today()
     start_of_month = today.replace(day=1)
 
-    try:
-        result = await db.execute(
-            select(SpendingDB).where(SpendingDB.date >= start_of_month, SpendingDB.date <= today)
-        )
-        spendings = result.scalars().all()
-        return [
-            SpendingResponse.model_validate(spending, from_attributes=True)
-            for spending in spendings
-        ]
-    except NoResultFound:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="No spendings found for the current month"
-        )
+    result = await db.execute(
+        select(SpendingDB).where(SpendingDB.date >= start_of_month, SpendingDB.date <= today)
+    )
+    spendings = result.scalars().all()
+    return [
+        SpendingResponse.model_validate(spending, from_attributes=True) for spending in spendings
+    ]
 
 
 @router.post("/", response_model=SpendingResponse)
 async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(get_db)):
-    # Fetch related currency and category from the database
     currency = await db.execute(select(CurrencyDB).where(CurrencyDB.id == spending.currency_id))
     category = await db.execute(select(CategoryDB).where(CategoryDB.id == spending.category_id))
 
@@ -104,28 +101,19 @@ async def create_spending(spending: CreateSpending, db: AsyncSession = Depends(g
 async def update_spending(
     spending_id: UUID, update_data: UpdateSpending, db: AsyncSession = Depends(get_db)
 ):
-    try:
-        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
-        spending = result.scalar_one()
+    spending = await fetch_spending_by_id(spending_id, db)
 
-        # Update the spending attributes with the new values
-        for key, value in update_data.model_dump(exclude_unset=True).items():
-            setattr(spending, key, value)
+    for key, value in update_data.model_dump(exclude_unset=True).items():
+        setattr(spending, key, value)
 
-        db.add(spending)
-        await db.commit()
-        await db.refresh(spending)
-        return SpendingResponse.model_validate(spending, from_attributes=True)
-    except NoResultFound:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
+    db.add(spending)
+    await db.commit()
+    await db.refresh(spending)
+    return SpendingResponse.model_validate(spending, from_attributes=True)
 
 
 @router.delete("/{spending_id:uuid}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_spending(spending_id: UUID, db: AsyncSession = Depends(get_db)):
-    try:
-        result = await db.execute(select(SpendingDB).where(SpendingDB.id == spending_id))
-        spending = result.scalar_one()
-        await db.delete(spending)
-        await db.commit()
-    except NoResultFound:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Spending not found")
+    spending = await fetch_spending_by_id(spending_id, db)
+    await db.delete(spending)
+    await db.commit()
