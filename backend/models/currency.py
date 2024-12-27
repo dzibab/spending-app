@@ -14,5 +14,5 @@ class CurrencyCreate(CurrencyBase):
 class CurrencyResponse(CurrencyBase):
     id: UUID
 
-    class Config:
+    class ConfigDict:
         from_attributes = True

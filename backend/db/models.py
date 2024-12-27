@@ -2,8 +2,7 @@ import uuid
 import datetime
 
 from sqlalchemy import Column, Integer, String, Date, UUID, ForeignKey
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, declarative_base
 
 
 Base = declarative_base()
